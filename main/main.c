@@ -1,9 +1,94 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
+#include "driver/gpio.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "esp_log.h"
+
+#define light1 19
+#define light2 18
+#define light3 5
+#define light4 17
+#define light5 16
+#define light6 4
+#define rollBtn 36
+
+void roll(int r)
+{
+    switch(r)
+    {
+        case 1:
+            gpio_set_level(light1, 1);
+            gpio_set_level(light2, 0);
+            gpio_set_level(light3, 0);
+            gpio_set_level(light4, 0);
+            gpio_set_level(light5, 0);
+            gpio_set_level(light6, 0);
+            break;
+        case 2:
+            gpio_set_level(light1, 1);
+            gpio_set_level(light2, 1);
+            gpio_set_level(light3, 0);
+            gpio_set_level(light4, 0);
+            gpio_set_level(light5, 0);
+            gpio_set_level(light6, 0);
+            break;
+        case 3:
+            gpio_set_level(light1, 1);
+            gpio_set_level(light2, 1);
+            gpio_set_level(light3, 1);
+            gpio_set_level(light4, 0);
+            gpio_set_level(light5, 0);
+            gpio_set_level(light6, 0);
+            break;
+        case 4:
+            gpio_set_level(light1, 1);
+            gpio_set_level(light2, 1);
+            gpio_set_level(light3, 1);
+            gpio_set_level(light4, 1);
+            gpio_set_level(light5, 0);
+            gpio_set_level(light6, 0);
+            break;
+        case 5:
+            gpio_set_level(light1, 1);
+            gpio_set_level(light2, 1);
+            gpio_set_level(light3, 1);
+            gpio_set_level(light4, 1);
+            gpio_set_level(light5, 1);
+            gpio_set_level(light6, 0);
+            break;
+        case 6:
+            gpio_set_level(light1, 1);
+            gpio_set_level(light2, 1);
+            gpio_set_level(light3, 1);
+            gpio_set_level(light4, 1);
+            gpio_set_level(light5, 1);
+            gpio_set_level(light6, 1);
+            break;
+    }
+}
 
 void app_main(void)
 {
-    int r = rand() % 5 + 1;
-    printf("le nombre est %d\n", r);
-
+    gpio_set_direction(light1, GPIO_MODE_OUTPUT);
+    gpio_set_direction(light2, GPIO_MODE_OUTPUT);
+    gpio_set_direction(light3, GPIO_MODE_OUTPUT);
+    gpio_set_direction(light4, GPIO_MODE_OUTPUT);
+    gpio_set_direction(light5, GPIO_MODE_OUTPUT);
+    gpio_set_direction(light6, GPIO_MODE_OUTPUT);
+    gpio_set_direction(rollBtn, GPIO_MODE_INPUT);
+    gpio_set_pull_mode(rollBtn, GPIO_PULLUP_ONLY);
+    
+    while(1)
+    {
+        if(gpio_get_level(rollBtn) == 0)
+        {
+            srand(time(NULL));
+            int r = rand() % 6 + 1;
+            ESP_LOGI("Roll", "Rolled: %d", r);
+            roll(r);
+        }
+        vTaskDelay(pdMS_TO_TICKS(100));
+    }
 }
